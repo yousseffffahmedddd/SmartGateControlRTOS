@@ -5,39 +5,23 @@
 #include "basic_io.h"
 #include "TM4C123GH6PM.h"
 
-#define QUEUE_LENGTH    5
+#define QUEUE_LENGTH    10
 #define QUEUE_ITEM_SIZE sizeof(int)
 
 extern void PortF_Init(void);
 extern void PortB_Init(void);
 extern void vInputTask(void *pvParameters);
-void TestTask(void *pvParameters);
+extern void vGateControlTask(void *pvParameters);
+extern void vLEDControlTask(void *pvParameters);
+extern void vSafetyTask(void *pvParameters);
+extern void vOpenLimitTask(void *pvParameters);
+extern void vCloseLimitTask(void *pvParameters);
 	
 QueueHandle_t xGateEventQueue;
-
 SemaphoreHandle_t xGateStateMutex;
 SemaphoreHandle_t xOpenLimitSem;
 SemaphoreHandle_t xCloseLimitSem;
 SemaphoreHandle_t xObstacleSem;
-
-void GPIOF_Handler(void){
-    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-
-    GPIOIntClear('F', 1 << 4);
-
-    // xTaskNotifyFromISR(xInputTaskHandle, NOTIFY_DRV_CLOSE, eSetBits, &xHigherPriorityTaskWoken);
-		
-		xSemaphoreGiveFromISR(semaphore, &xHigherPriorityTaskWoken);
-
-    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-}
-
-void TestTask(void *pvParameters){
-	for(;;){
-		xSemaphoreTake(semaphore, portMAX_DELAY);
-		vPrintString("KILL ALL NIGGERS\n");
-	}
-}
 
 int main(void)
 {

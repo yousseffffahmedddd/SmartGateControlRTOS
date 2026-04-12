@@ -3,7 +3,6 @@
 #include "task.h"
 #include "queue.h"
 #include "gate_events.h"
-#include "gate_config.h"
 
 /* -- Tunables ------------------------------------------------------- */
 #define DEBOUNCE_MS          20u    /* settle time after first edge      */
@@ -17,6 +16,7 @@
 #define NOTIFY_SEC_CLOSE  (1UL << 3)
 
 extern QueueHandle_t xGateEventQueue;   /* created in main.c */
+static inline uint32_t GPIOPinRead(uint32_t port, uint8_t pins);
 
 /* -- Internal helpers ----------------------------------------------- */
 
@@ -126,15 +126,23 @@ void vInputTask(void *pvParameters)
 
         if (secActive) {
             /* Security panel takes priority — process it */
+						/* How to use:
             processPanel(SEC_OPEN_PORT,  SEC_OPEN_PIN,
                          SEC_CLOSE_PORT, SEC_CLOSE_PIN,
-                         SRC_SECURITY);
+                         SRC_SECURITY); */
+						processPanel(GPIOF_BASE,  1 << 4,
+												 GPIOF_BASE, 1 << 0,
+												 SRC_SECURITY);
         }
 
         if (drvActive && !secActive) {
             /* Only process driver if security is not simultaneously active */
+						/* How to use:
             processPanel(DRV_OPEN_PORT,  DRV_OPEN_PIN,
                          DRV_CLOSE_PORT, DRV_CLOSE_PIN,
+                         SRC_DRIVER); */
+					  processPanel(GPIOB_BASE,  1 << 0,
+                         GPIOB_BASE, 1 << 1,
                          SRC_DRIVER);
         }
         /* If both panels active simultaneously and security already sent

@@ -37,7 +37,7 @@ USAGE EXAMPLE:
 GPIOIntClear(GPIOF, (1 << 4));  // clear interrupt on PF4
 */
 
-void PortF_Init(void) // REMOVE LOCK
+void PortF_Init(void)
 {
     SYSCTL->RCGCGPIO = (1 << 5);  
     // Enable clock for GPIO Port F (bit 5 = Port F)
@@ -45,6 +45,10 @@ void PortF_Init(void) // REMOVE LOCK
     volatile int delay = 1000;
     while(delay--) {}
     // Small delay to allow clock to stabilize
+			
+		GPIOF->LOCK = 0x4C4F434B;
+		GPIOF->CR |= (1 << 0);
+		// Unlock GPIOF to allow changes to PF0
 
     GPIOF->DIR |= ((1 << 1) | (1 << 3));
     // Set PF1 and PF3 as OUTPUT (LED pins)
