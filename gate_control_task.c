@@ -6,12 +6,10 @@
 #include "timers.h"
 #include "gate_events.h"
 #include "gate_control_task.h"
+#include "led_status_tasks.h"
+#include "rtos_resources.h"
 
-
-static GateCtx_t gGate = { .state = GATE_IDLE_CLOSED, .autoMode = 0 };
-
-extern QueueHandle_t   xGateEventQueue;
-extern SemaphoreHandle_t xGateStateMutex;   /* created in main.c */
+GateCtx_t gGateCtx = { .state = GATE_IDLE_CLOSED, .autoMode = 0 };
 
 /* -- FSM transition logic ------------------------------------------- */
 static void handleEvent(GateEvent_t *pEvt)
@@ -19,7 +17,7 @@ static void handleEvent(GateEvent_t *pEvt)
     /* Acquire mutex before reading/writing shared gate context */
     xSemaphoreTake(xGateStateMutex, portMAX_DELAY);
 
-    GateState_t currentState = gGate.state;
+    GateState_t currentState = gGateCtx.state;
     GateCommand_t cmd        = pEvt->cmd;
     PressType_t   press      = pEvt->pressType;
     CommandSource_t src      = pEvt->src;
@@ -29,9 +27,9 @@ static void handleEvent(GateEvent_t *pEvt)
     /* -- IDLE_CLOSED ----------------------------------------------- */
     case GATE_IDLE_CLOSED:
         if (cmd == CMD_OPEN) {
-            gGate.autoMode = (press == PRESS_TAP) ? 1u : 0u;
-            gGate.state    = GATE_OPENING;
-            ledGreenOn();
+            gGateCtx.autoMode = (press == PRESS_TAP) ? 1u : 0u;
+            gGateCtx.state    = GATE_OPENING;
+						setLED(LED_GREEN);
         }
         /* CMD_CLOSE or CMD_STOP ? ignore, already closed */
         break;
@@ -39,9 +37,9 @@ static void handleEvent(GateEvent_t *pEvt)
     /* -- IDLE_OPEN ------------------------------------------------- */
     case GATE_IDLE_OPEN:
         if (cmd == CMD_CLOSE) {
-            gGate.autoMode = (press == PRESS_TAP) ? 1u : 0u;
-            gGate.state    = GATE_CLOSING;
-            ledRedOn();
+            gGateCtx.autoMode = (press == PRESS_TAP) ? 1u : 0u;
+            gGateCtx.state    = GATE_CLOSING;
+						setLED(LED_RED);
         }
         /* CMD_OPEN or CMD_STOP ? ignore, already open */
         break;
@@ -50,72 +48,72 @@ static void handleEvent(GateEvent_t *pEvt)
     case GATE_OPENING:
         if (cmd == CMD_STOP) {
             /* Conflicting buttons on same panel, or timer synthetic */
-            gGate.state    = GATE_STOPPED_MIDWAY;
-            gGate.autoMode = 0;
-            ledAllOff();
+            gGateCtx.state    = GATE_STOPPED_MIDWAY;
+            gGateCtx.autoMode = 0;
+						setLED(LED_OFF);
         }
         else if (cmd == CMD_CLOSE) {
-            if (gGate.autoMode) {
+            if (gGateCtx.autoMode) {
                 /* Auto mode: close command stops, does not reverse */
-                gGate.state    = GATE_STOPPED_MIDWAY;
-                gGate.autoMode = 0;
-                ledAllOff();
+                gGateCtx.state    = GATE_STOPPED_MIDWAY;
+                gGateCtx.autoMode = 0;
+								setLED(LED_OFF);
             } else {
                 /* Manual mode: reverse direction */
-                gGate.state = GATE_CLOSING;
-                ledRedOn();
+                gGateCtx.state = GATE_CLOSING;
+								setLED(LED_RED);
             }
         }
         else if (cmd == CMD_OPEN && press == PRESS_RELEASE) {
             /* Manual button released mid-open */
-            if (!gGate.autoMode) {
-                gGate.state = GATE_STOPPED_MIDWAY;
-                ledAllOff();
+            if (!gGateCtx.autoMode) {
+                gGateCtx.state = GATE_STOPPED_MIDWAY;
+								setLED(LED_OFF);
             }
-            /* Auto mode: PRESS_RELEASE is ignored — motor keeps running */
+            /* Auto mode: PRESS_RELEASE is ignored - motor keeps running */
         }
-        /* CMD_OPEN PRESS_TAP/HOLD while already opening ? ignore */
+        /* CMD_OPEN PRESS_TAP/HOLD while already opening? ignore */
         break;
 
     /* -- CLOSING --------------------------------------------------- */
     case GATE_CLOSING:
         if (cmd == CMD_STOP) {
-            gGate.state    = GATE_STOPPED_MIDWAY;
-            gGate.autoMode = 0;
-            ledAllOff();
+            gGateCtx.state    = GATE_STOPPED_MIDWAY;
+            gGateCtx.autoMode = 0;
+						setLED(LED_OFF);
         }
         else if (cmd == CMD_OPEN) {
-            if (gGate.autoMode) {
-                gGate.state    = GATE_STOPPED_MIDWAY;
-                gGate.autoMode = 0;
-                ledAllOff();
+            if (gGateCtx.autoMode) {
+                gGateCtx.state    = GATE_STOPPED_MIDWAY;
+                gGateCtx.autoMode = 0;
+								setLED(LED_OFF);
             } else {
-                gGate.state = GATE_OPENING;
-                ledGreenOn();
+                gGateCtx.state = GATE_OPENING;
+								setLED(LED_GREEN);
             }
         }
         else if (cmd == CMD_CLOSE && press == PRESS_RELEASE) {
-            if (!gGate.autoMode) {
-                gGate.state = GATE_STOPPED_MIDWAY;
-                ledAllOff();
+            if (!gGateCtx.autoMode) {
+                gGateCtx.state = GATE_STOPPED_MIDWAY;
+								setLED(LED_OFF);
             }
         }
-        /* CMD_CLOSE PRESS_TAP/HOLD while closing ? ignore */
+        /* CMD_CLOSE PRESS_TAP/HOLD while closing? ignore */
         break;
 
     /* -- STOPPED_MIDWAY -------------------------------------------- */
     case GATE_STOPPED_MIDWAY:
         if (cmd == CMD_OPEN && press != PRESS_RELEASE) {
-            gGate.autoMode = (press == PRESS_TAP) ? 1u : 0u;
-            gGate.state    = GATE_OPENING;
-            ledGreenOn();
+            gGateCtx.autoMode = (press == PRESS_TAP) ? 1u : 0u;
+            gGateCtx.state    = GATE_OPENING;
+						setLED(LED_GREEN);
         }
         else if (cmd == CMD_CLOSE && press != PRESS_RELEASE) {
-            gGate.autoMode = (press == PRESS_TAP) ? 1u : 0u;
-            gGate.state    = GATE_CLOSING;
-            ledRedOn();
+            gGateCtx.autoMode = (press == PRESS_TAP) ? 1u : 0u;
+            gGateCtx.state    = GATE_CLOSING;
+						setLED(LED_RED);
         }
-        /* CMD_STOP or PRESS_RELEASE ? stay stopped */
+        /* CMD_STOP or PRESS_RELEASE? stay stopped */
         break;
 
     default:

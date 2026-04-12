@@ -1,13 +1,8 @@
 #include "FreeRTOS.h"
-#include "gate_control_task.h"   /* GateCtx_t, GateState_t, setLED() */
 #include "semphr.h"
-
-// from main.c
-extern SemaphoreHandle_t xGateStateMutex;
-extern SemaphoreHandle_t xOpenLimitSem;
-extern SemaphoreHandle_t xCloseLimitSem;
-extern SemaphoreHandle_t xObstacleSem;
-extern GateCtx_t gGateCtx;
+#include "gate_control_task.h"
+#include "led_status_tasks.h"
+#include "rtos_resources.h"
 
 void vSafetyTask(void *pvParameters){
 	xSemaphoreTake(xObstacleSem, portMAX_DELAY);

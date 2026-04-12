@@ -1,4 +1,4 @@
-/* gate_events.h — shared between Input Task and Gate Control Task */
+/* gate_events.h - shared between Input Task and Gate Control Task */
 #ifndef GATE_EVENTS_H
 #define GATE_EVENTS_H
 
@@ -17,7 +17,7 @@ typedef enum {
     CMD_STOP  = 2    /* conflicting buttons on same panel */
 } GateCommand_t;
 
-/* Press type — distinguishes manual hold from one-touch tap */
+/* Press type - distinguishes manual hold from one-touch tap */
 typedef enum {
     PRESS_HOLD    = 0,   /* button still held after debounce window */
     PRESS_TAP     = 1,   /* button released within TAP_THRESHOLD_MS */

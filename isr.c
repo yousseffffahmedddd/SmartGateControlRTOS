@@ -1,6 +1,8 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "semphr.h"
+#include "gpio_utility.h"
+#include "rtos_resources.h"
 
 /* Bit-field encoding sent via task notification value.
    The Input Task reads the raw GPIO level on wake-up,
@@ -10,17 +12,7 @@
 #define NOTIFY_SEC_OPEN   (1UL << 2)
 #define NOTIFY_SEC_CLOSE  (1UL << 3)
 
-extern TaskHandle_t xInputTaskHandle;
-extern SemaphoreHandle_t xOpenLimitSem;
-extern SemaphoreHandle_t xCloseLimitSem;
-extern SemaphoreHandle_t xObstacleSem;
-
-static inline void GPIOIntClear(GPIOA_Type *port, uint8_t pins);
-/*
-USAGE EXAMPLE:
-
-GPIOIntClear(GPIOF, (1 << 4));  // clear interrupt on PF4
-*/
+/* ISR resources are defined in main.c */
 
 
 // -- SECURITY OPEN and SECURITY CLOSE ---------------------------------------------------

@@ -1,41 +1,4 @@
-#include "stdint.h"
-#include "TM4C123GH6PM.h"
-
-static inline uint32_t GPIOPinRead(uint32_t port, uint8_t pins)
-{
-    return *((volatile uint32_t *)(port + (pins << 2)));
-}
-/*
-USAGE EXAMPLE:
-
-uint32_t val = GPIOPinRead(GPIOF_BASE, (1 << 4));
-
-if (val)
-{
-    // PF4 is HIGH
-}
-*/
-
-static inline void GPIOPinWrite(uint32_t port, uint8_t pins, uint8_t value)
-{
-    *((volatile uint32_t *)(port + (pins << 2))) = value ? pins : 0;
-}
-/*
-USAGE EXAMPLE:
-
-GPIOPinWrite(GPIOF_BASE, (1 << 1), 1);   // PF1 HIGH
-GPIOPinWrite(GPIOF_BASE, (1 << 1), 0);   // PF1 LOW
-*/
-
-static inline void GPIOIntClear(GPIOA_Type *port, uint8_t pins)
-{
-    port->ICR = pins;
-}
-/*
-USAGE EXAMPLE:
-
-GPIOIntClear(GPIOF, (1 << 4));  // clear interrupt on PF4
-*/
+#include "gpio_utility.h"
 
 void PortF_Init(void)
 {
@@ -95,28 +58,28 @@ void PortB_Init(void)
 
     GPIOB->DIR &= ~((1 << 0) | (1 << 1) | (1 << 2) |
                     (1 << 3) | (1 << 4));
-    // Set PB0–PB4 as INPUTs
+    // Set PB0-PB4 as INPUTs
 
     GPIOB->DEN |= ((1 << 0) | (1 << 1) | (1 << 2) |
                    (1 << 3) | (1 << 4));
-    // Enable digital function on PB0–PB4
+    // Enable digital function on PB0-PB4
 
     GPIOB->PUR |= ((1 << 0) | (1 << 1) | (1 << 2) |
                    (1 << 3) | (1 << 4));
-    // Enable pull-up resistors on PB0–PB4
+    // Enable pull-up resistors on PB0-PB4
 
     GPIOB->IS &= ~((1 << 0) | (1 << 1) | (1 << 2) |
                    (1 << 3) | (1 << 4));
-    // Make PB0–PB4 edge-sensitive interrupts
+    // Make PB0-PB4 edge-sensitive interrupts
 
     GPIOB->IBE |= ((1 << 0) | (1 << 1));
     // Enable both-edge interrupt on PB0 and PB1
 
     GPIOB->IBE &= ~((1 << 2) | (1 << 3) | (1 << 4));
-    // Disable both-edge on PB2–PB4 (single-edge mode)
+    // Disable both-edge on PB2-PB4 (single-edge mode)
 
     GPIOB->IEV &= ~((1 << 2) | (1 << 3) | (1 << 4));
-    // Set PB2–PB4 interrupt to falling edge
+    // Set PB2-PB4 interrupt to falling edge
 
     GPIOB->ICR |= ((1 << 0) | (1 << 1) | (1 << 2) |
                    (1 << 3) | (1 << 4));
@@ -124,7 +87,7 @@ void PortB_Init(void)
 
     GPIOB->IM |= ((1 << 0) | (1 << 1) | (1 << 2) |
                   (1 << 3) | (1 << 4));
-    // Unmask interrupts for PB0–PB4
+    // Unmask interrupts for PB0-PB4
 
     NVIC_EnableIRQ(GPIOB_IRQn);
     // Enable GPIO Port B interrupt in NVIC
