@@ -15,22 +15,40 @@ extern SemaphoreHandle_t xOpenLimitSem;
 extern SemaphoreHandle_t xCloseLimitSem;
 extern SemaphoreHandle_t xObstacleSem;
 
-/* -- Driver OPEN --------------------------------------------------- */
-void GPIO_DriverOpen_ISR(void)
+static inline void GPIOIntClear(GPIOA_Type *port, uint8_t pins);
+/*
+USAGE EXAMPLE:
+
+GPIOIntClear(GPIOF, (1 << 4));  // clear interrupt on PF4
+*/
+
+
+/* -- SECURITY OPEN and SECURITY CLOSE --------------------------------------------------- */
+void GPIOF_Handler(void)
 {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
-    GPIOIntClear(DRV_OPEN_PORT, DRV_OPEN_PIN);
-
-    xTaskNotifyFromISR(xInputTaskHandle,
-                       NOTIFY_DRV_OPEN,
-                       eSetBits,
-                       &xHigherPriorityTaskWoken);
+		if(GPIOF->MIS & (1 << 4)){ // if interrupt caused by PF4 (SECURITY OPEN)
+			GPIOIntClear(GPIOF, (1 << 4)); // clear interrupt on PF4
+			xTaskNotifyFromISR(xInputTaskHandle,
+												 NOTIFY_SEC_OPEN,
+												 eSetBits,
+												 &xHigherPriorityTaskWoken);
+		}
+	
+		if(GPIOF->MIS & (1 << 0)){ // if interrupt caused by PF0 (SECURITY CLOSE)
+			GPIOIntClear(GPIOF, (1 << 0)); // clear interrupt on PF0
+			xTaskNotifyFromISR(xInputTaskHandle,
+												 NOTIFY_SEC_CLOSE,
+												 eSetBits,
+												 &xHigherPriorityTaskWoken);
+		}
 
     portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 
-/* -- Driver CLOSE -------------------------------------------------- */
+/*
+// -- Driver CLOSE -------------------------------------------------- 
 void GPIO_DriverClose_ISR(void)
 {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
@@ -45,7 +63,7 @@ void GPIO_DriverClose_ISR(void)
     portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 
-/* -- Security OPEN ------------------------------------------------- */
+// -- Security OPEN -------------------------------------------------
 void GPIO_SecurityOpen_ISR(void)
 {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
@@ -60,7 +78,7 @@ void GPIO_SecurityOpen_ISR(void)
     portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 
-/* -- Security CLOSE ------------------------------------------------ */
+// -- Security CLOSE ------------------------------------------------
 void GPIO_SecurityClose_ISR(void)
 {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
@@ -75,7 +93,7 @@ void GPIO_SecurityClose_ISR(void)
     portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 
-/* -- OPEN Limit ------------------------------------------------ */
+// -- OPEN Limit ------------------------------------------------
 void GPIO_OpenLimit_ISR(void)
 {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
@@ -90,7 +108,7 @@ void GPIO_OpenLimit_ISR(void)
     portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 
-/* -- CLOSE Limit ------------------------------------------------ */
+// -- CLOSE Limit ------------------------------------------------
 void GPIO_CloseLimit_ISR(void)
 {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
@@ -105,7 +123,7 @@ void GPIO_CloseLimit_ISR(void)
     portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 
-/* -- OBSTACLE ------------------------------------------------ */
+// -- OBSTACLE ------------------------------------------------
 void GPIO_Obstacle_ISR(void)
 {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
@@ -119,3 +137,4 @@ void GPIO_Obstacle_ISR(void)
 
     portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
+*/

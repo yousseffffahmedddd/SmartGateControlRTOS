@@ -3,65 +3,22 @@
 #include "queue.h"
 #include "semphr.h"
 #include "basic_io.h"
+#include "TM4C123GH6PM.h"
 
 #define QUEUE_LENGTH    5
 #define QUEUE_ITEM_SIZE sizeof(int)
-	
-QueueHandle_t xQueue;
+
+extern void PortF_Init(void);
+extern void PortB_Init(void);
+extern void vInputTask(void *pvParameters);
 void TestTask(void *pvParameters);
-SemaphoreHandle_t semaphore;
 	
-void PortF_Init(void)
-{
-    /* Enable clock for Port F */
-		SYSCTL->RCGCGPIO = 1 << 5;
-    volatile int delay = 1000;  // Simple delay for clock to stabilize
-    while(delay--) {}
+QueueHandle_t xGateEventQueue;
 
-		GPIOF->DIR |= (1 << 1);
-		GPIOF->DIR &= ~(1 << 4);
-    GPIOF->DEN |= ((1 << 1) | (1 << 4));
-		GPIOF->PUR |= (1 << 4);
-			
-    GPIOF->IS &= ~(1 << 4);     /* Edge-sensitive */
-    GPIOF->IBE &= ~(1 << 4);    /* Single edge */
-    GPIOF->IEV &= ~(1 << 4);    /* Falling edge (button press) */
-    GPIOF->ICR |= (1 << 4);     /* Clear any prior interrupt */
-    GPIOF->IM |= (1 << 4);      /* Unmask interrupt */
-			
-		NVIC_EnableIRQ(GPIOF_IRQn);
-		// we have to lower priority of the ISR to make it compatible with FreeRTOS
-		NVIC_SetPriority(GPIOF_IRQn, 6);
-		__asm("  CPSIE I");
-}
-
-void GPIOIntClear(uint32_t port, uint8_t pins)
-{
-    if (port == 'A')
-    {
-				GPIOA->ICR = pins;
-    }
-    else if (port == 'B')
-    {
-        GPIOB->ICR = pins;
-    }
-    else if (port == 'C')
-    {
-        GPIOC->ICR = pins;
-    }
-    else if (port == 'D')
-    {
-        GPIOD->ICR = pins;
-    }
-    else if (port == 'E')
-    {
-        GPIOE->ICR = pins;
-    }
-    else if (port == 'F')
-    {
-        GPIOF->ICR = pins;
-    }
-}
+SemaphoreHandle_t xGateStateMutex;
+SemaphoreHandle_t xOpenLimitSem;
+SemaphoreHandle_t xCloseLimitSem;
+SemaphoreHandle_t xObstacleSem;
 
 void GPIOF_Handler(void){
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
@@ -84,21 +41,59 @@ void TestTask(void *pvParameters){
 
 int main(void)
 {
-		PortF_Init();
-		vSemaphoreCreateBinary(semaphore);
-		xSemaphoreTake(semaphore, 0); // make it EMPTY initially
+		/*
+	Port F
+		PF4 Security OPEN
+		PF0 Security CLOSE (unlock needed)
+		PF3 Green LED
+		PF1 Red LED
 
-    xQueue = xQueueCreate(QUEUE_LENGTH, QUEUE_ITEM_SIZE);
-    
-    if (xQueue == NULL)
+	Port B
+		PB0 Driver OPEN
+		PB1 Driver CLOSE
+		PB2 Open Limit
+		PB3 Closed Limit
+		PB4 Obstacle
+		*/
+		PortF_Init();
+		PortB_Init();
+		__asm("  CPSIE I");
+	
+		// mutex
+		vSemaphoreCreateBinary(xGateStateMutex);
+	
+		// open limit semaphore
+		vSemaphoreCreateBinary(xOpenLimitSem);
+		xSemaphoreTake(xOpenLimitSem, 0);
+		
+		// close limit semaphore
+		vSemaphoreCreateBinary(xCloseLimitSem);
+		xSemaphoreTake(xCloseLimitSem, 0);
+		
+		// obstacle semaphore
+		vSemaphoreCreateBinary(xObstacleSem);
+		xSemaphoreTake(xObstacleSem, 0);
+
+		// event queue
+    xGateEventQueue = xQueueCreate(QUEUE_LENGTH, QUEUE_ITEM_SIZE);    
+    if (xGateEventQueue == NULL)
     {
         /* Queue creation failed! */
-        vPrintString("Could not create queue!\n");
         for (;;);
     }
-    
-    /* Create sender task */
-    xTaskCreate(TestTask, "Task", 240, NULL, 1, NULL);
+		
+		// priority from 1 to 5
+    xTaskCreate(vInputTask, "Input Task", 240, NULL, 3, NULL);
+		xTaskCreate(vGateControlTask, "Gate Control Task", 240, NULL, 2, NULL);
+    xTaskCreate(vLEDControlTask, "LED Contorl Task", 240, NULL, 2, NULL);
+		
+		// semaphore-based tasks
+    xTaskCreate(vSafetyTask, "Safety Task", 240, NULL, 5, NULL);
+		xTaskCreate(vOpenLimitTask, "Open Limit Task", 240, NULL, 4, NULL);
+    xTaskCreate(vCloseLimitTask, "Close Limit Task", 240, NULL, 4, NULL);
+
+		// optional status task
+		// xTaskCreate(vStatusTask, "Task", 240, NULL, 1, NULL);
     
     vTaskStartScheduler();
     
