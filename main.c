@@ -23,6 +23,9 @@ SemaphoreHandle_t xOpenLimitSem;
 SemaphoreHandle_t xCloseLimitSem;
 SemaphoreHandle_t xObstacleSem;
 
+// timer handle
+TimerHandle_t    xReverseTimer;
+
 int main(void)
 {
 		/*
@@ -79,6 +82,18 @@ int main(void)
 		// optional status task
 		// xTaskCreate(vStatusTask, "Task", 240, NULL, 1, NULL);
     
+
+		// initialize Timer Api
+	/* 5. Create reverse timer — ONE-SHOT, 500ms */
+    xReverseTimer = xTimerCreate(
+        "RevTmr",               /* name, debug only          */
+        pdMS_TO_TICKS(500),     /* period                    */
+        pdFALSE,                /* one-shot (not auto-reload)*/
+        NULL,                   /* timer ID, not needed      */
+        vReverseTimerCb         /* callback function         */
+    );
+
+
     vTaskStartScheduler();
     
     for (;;);
