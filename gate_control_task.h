@@ -18,4 +18,8 @@ typedef struct {
     uint8_t     autoMode;   /* 1 = one-touch auto, 0 = manual hold */
 } GateCtx_t;
 
-#endif
+extern GateCtx_t gGateCtx;
+
+void vGateControlTask(void *pvParameters);
+
+#endif /* GATE_CONTROL_TASK_H */

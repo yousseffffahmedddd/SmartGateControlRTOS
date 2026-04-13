@@ -3,6 +3,8 @@
 #include "task.h"
 #include "queue.h"
 #include "gate_events.h"
+#include "gpio_utility.h"
+#include "rtos_resources.h"
 
 /* -- Tunables ------------------------------------------------------- */
 #define DEBOUNCE_MS          20u    /* settle time after first edge      */
@@ -15,8 +17,7 @@
 #define NOTIFY_SEC_OPEN   (1UL << 2)
 #define NOTIFY_SEC_CLOSE  (1UL << 3)
 
-extern QueueHandle_t xGateEventQueue;   /* created in main.c */
-static inline uint32_t GPIOPinRead(uint32_t port, uint8_t pins);
+/* xGateEventQueue is defined in main.c */
 
 /* -- Internal helpers ----------------------------------------------- */
 
@@ -48,7 +49,7 @@ static void processPanel(uint32_t openPort, uint8_t openPin,
 
     GateEvent_t evt = { .src = src };
 
-    /* Conflicting input — same panel pressing both */
+    /* Conflicting input - same panel pressing both */
     if (openHeld && closeHeld) {
         evt.cmd       = CMD_STOP;
         evt.pressType = PRESS_HOLD;
@@ -74,7 +75,7 @@ static void processPanel(uint32_t openPort, uint8_t openPin,
         port = closePort;
         pin  = closePin;
     } else {
-        return;   /* spurious wake — button already released */
+        return;   /* spurious wake - button already released */
     }
 
     /* Wait for release to classify tap vs hold */
@@ -94,7 +95,7 @@ static void processPanel(uint32_t openPort, uint8_t openPin,
         evt.pressType = PRESS_RELEASE;
         xQueueSend(xGateEventQueue, &evt, 0);
     } else {
-        /* -- TAP: button released quickly ? one-touch auto mode */
+        /* -- TAP: button released quickly - one-touch auto mode */
         evt.cmd       = cmd;
         evt.pressType = PRESS_TAP;
         xQueueSend(xGateEventQueue, &evt, 0);
@@ -113,19 +114,19 @@ void vInputTask(void *pvParameters)
                         &ulNotifiedValue,
                         portMAX_DELAY);
 
-        /* Debounce — let the lines settle */
+        /* Debounce - let the lines settle */
         vTaskDelay(pdMS_TO_TICKS(DEBOUNCE_MS));
 
         /* -- Priority resolution --------------------------------------
            If security panel has fired we process it and ignore driver.
            If only driver fired, process driver.
-           Both fired simultaneously ? security wins (spec §4).       */
+           Both fired simultaneously? security wins (spec 4).          */
 
         uint8_t secActive = (ulNotifiedValue & (NOTIFY_SEC_OPEN | NOTIFY_SEC_CLOSE)) != 0;
         uint8_t drvActive = (ulNotifiedValue & (NOTIFY_DRV_OPEN | NOTIFY_DRV_CLOSE)) != 0;
 
         if (secActive) {
-            /* Security panel takes priority — process it */
+            /* Security panel takes priority - process it */
 						/* How to use:
             processPanel(SEC_OPEN_PORT,  SEC_OPEN_PIN,
                          SEC_CLOSE_PORT, SEC_CLOSE_PIN,

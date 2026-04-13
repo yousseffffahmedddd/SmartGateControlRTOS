@@ -1,6 +1,8 @@
 #include "FreeRTOS.h"
-#include "gate_control_task.h"   /* GateCtx_t, GateState_t, setLED() */
 #include "semphr.h"
+#include "gate_control_task.h"
+#include "led_status_tasks.h"
+#include "rtos_resources.h"
 
 // check for timing as gate mutex may made the immediate response to be delayed
 

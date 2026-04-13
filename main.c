@@ -2,14 +2,14 @@
 #include "task.h"
 #include "queue.h"
 #include "semphr.h"
-#include "basic_io.h"
-#include "TM4C123GH6PM.h"
+#include "gpio_utility.h"
+#include "rtos_resources.h"
+#include "led_status_tasks.h"
+#include "gate_control_task.h"
 
 #define QUEUE_LENGTH    10
 #define QUEUE_ITEM_SIZE sizeof(int)
 
-extern void PortF_Init(void);
-extern void PortB_Init(void);
 extern void vInputTask(void *pvParameters);
 extern void vGateControlTask(void *pvParameters);
 extern void vLEDControlTask(void *pvParameters);
@@ -22,6 +22,8 @@ SemaphoreHandle_t xGateStateMutex;
 SemaphoreHandle_t xOpenLimitSem;
 SemaphoreHandle_t xCloseLimitSem;
 SemaphoreHandle_t xObstacleSem;
+SemaphoreHandle_t xLEDSem;
+TaskHandle_t xInputTaskHandle;
 
 // timer handle
 TimerHandle_t    xReverseTimer;
@@ -60,6 +62,10 @@ int main(void)
 		// obstacle semaphore
 		vSemaphoreCreateBinary(xObstacleSem);
 		xSemaphoreTake(xObstacleSem, 0);
+		
+		// led semaphore
+		vSemaphoreCreateBinary(xLEDSem);
+		xSemaphoreTake(xLEDSem, 0);
 
 		// event queue
     xGateEventQueue = xQueueCreate(QUEUE_LENGTH, QUEUE_ITEM_SIZE);    
@@ -70,7 +76,7 @@ int main(void)
     }
 		
 		// priority from 1 to 5
-    xTaskCreate(vInputTask, "Input Task", 240, NULL, 3, NULL);
+	xTaskCreate(vInputTask, "Input Task", 240, NULL, 3, &xInputTaskHandle);
 		xTaskCreate(vGateControlTask, "Gate Control Task", 240, NULL, 2, NULL);
     xTaskCreate(vLEDControlTask, "LED Contorl Task", 240, NULL, 2, NULL);
 		

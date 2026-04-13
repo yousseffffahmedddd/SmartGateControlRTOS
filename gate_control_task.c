@@ -1,21 +1,21 @@
-    /* gate_control_task.c */
-    #include "FreeRTOS.h"
-    #include "task.h"
-    #include "queue.h"
-    #include "semphr.h"
-    #include "timers.h"
-    #include "gate_events.h"
-    #include "gate_control_task.h"
+/* gate_control_task.c */
+#include "FreeRTOS.h"
+#include "task.h"
+#include "queue.h"
+#include "semphr.h"
+#include "timers.h"
+#include "gate_events.h"
+#include "gate_control_task.h"
+#include "led_status_tasks.h"
+#include "rtos_resources.h"
 
+GateCtx_t gGate = { .state = GATE_IDLE_CLOSED, .autoMode = 0 };
 
-    static GateCtx_t gGate = { .state = GATE_IDLE_CLOSED, .autoMode = 0 };
-
-    extern QueueHandle_t   xGateEventQueue;
-    extern SemaphoreHandle_t xGateStateMutex;   /* created in main.c */
-
+ 
     /* -- FSM transition logic ------------------------------------------- */
 
     // by ahmed and yousef: led after mutex release
+    //add close on idle close and open on idle open
    static void handleEvent(GateEvent_t *pEvt)
 {
     xSemaphoreTake(xGateStateMutex, portMAX_DELAY);
@@ -32,12 +32,20 @@
             gGate.autoMode = (press == PRESS_TAP) ? 1u : 0u;
             gGate.state    = GATE_OPENING;
         }
+        else if (cmd==CMD_CLOSE){
+                gGate.autoMode = (press == PRESS_TAP) ? 1u : 0u;
+                gGate.state    = GATE_CLOSING;
+        }
         break;
 
     case GATE_IDLE_OPEN:
         if (cmd == CMD_CLOSE) {
             gGate.autoMode = (press == PRESS_TAP) ? 1u : 0u;
             gGate.state    = GATE_CLOSING;
+        }
+        else if (cmd == CMD_OPEN){
+                gGate.autoMode = (press == PRESS_TAP) ? 1u : 0u;
+                gGate.state    = GATE_OPENING;
         }
         break;
 
@@ -104,6 +112,7 @@
     else if (newState == GATE_CLOSING)  ledRedOn();
     else                                ledAllOff();
 }
+
 
     /* -- Gate Control Task entry point --------------------------------- */
     void vGateControlTask(void *pvParameters)
