@@ -12,7 +12,7 @@ extern SemaphoreHandle_t xGateStateMutex;
 extern SemaphoreHandle_t xOpenLimitSem;
 extern SemaphoreHandle_t xCloseLimitSem;
 extern SemaphoreHandle_t xObstacleSem;
-extern GateCtx_t gGateCtx;
+extern GateCtx_t gGate;
 
 // by ahmed and yousef
 void vReverseTimerCb(TimerHandle_t xTimer)
