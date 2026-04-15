@@ -1,4 +1,4 @@
-./objects/main.o: main.c \
+./objects/isr.o: isr.c \
   C:\Users\Mohamed\ Morsi\AppData\Local\Arm\Packs\ARM\CMSIS-FreeRTOS\11.2.0\Source\include\FreeRTOS.h \
   C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stddef.h \
   C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdint.h \
@@ -22,7 +22,7 @@
   C:\Users\Mohamed\ Morsi\AppData\Local\Arm\Packs\ARM\CMSIS-FreeRTOS\11.2.0\Source\include\mpu_wrappers.h \
   C:\Users\Mohamed\ Morsi\AppData\Local\Arm\Packs\ARM\CMSIS-FreeRTOS\11.2.0\Source\include\task.h \
   C:\Users\Mohamed\ Morsi\AppData\Local\Arm\Packs\ARM\CMSIS-FreeRTOS\11.2.0\Source\include\list.h \
-  C:\Users\Mohamed\ Morsi\AppData\Local\Arm\Packs\ARM\CMSIS-FreeRTOS\11.2.0\Source\include\queue.h \
   C:\Users\Mohamed\ Morsi\AppData\Local\Arm\Packs\ARM\CMSIS-FreeRTOS\11.2.0\Source\include\semphr.h \
-  C:\Users\Mohamed\ Morsi\AppData\Local\Arm\Packs\ARM\CMSIS-FreeRTOS\11.2.0\Source\include\timers.h \
-  gpio_utility.h rtos_resources.h led_status_tasks.h gate_control_task.h
+  C:\Users\Mohamed\ Morsi\AppData\Local\Arm\Packs\ARM\CMSIS-FreeRTOS\11.2.0\Source\include\queue.h \
+  gpio_utility.h rtos_resources.h \
+  C:\Users\Mohamed\ Morsi\AppData\Local\Arm\Packs\ARM\CMSIS-FreeRTOS\11.2.0\Source\include\timers.h

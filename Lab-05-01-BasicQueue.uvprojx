@@ -135,11 +135,11 @@
             <RunIndependent>0</RunIndependent>
             <UpdateFlashBeforeDebugging>1</UpdateFlashBeforeDebugging>
             <Capability>1</Capability>
-            <DriverSelection>-1</DriverSelection>
+            <DriverSelection>4096</DriverSelection>
           </Flash1>
           <bUseTDR>1</bUseTDR>
           <Flash2>BIN\UL2CM3.DLL</Flash2>
-          <Flash3></Flash3>
+          <Flash3>"" ()</Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>
@@ -405,6 +405,51 @@
               <FileType>1</FileType>
               <FilePath>.\Required_Files\retarget.c</FilePath>
             </File>
+            <File>
+              <FileName>isr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\isr.c</FilePath>
+            </File>
+            <File>
+              <FileName>gate_events.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\gate_events.h</FilePath>
+            </File>
+            <File>
+              <FileName>input_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\input_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>gate_control_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\gate_control_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>gpio_utility.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\gpio_utility.c</FilePath>
+            </File>
+            <File>
+              <FileName>gate_control_task.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\gate_control_task.h</FilePath>
+            </File>
+            <File>
+              <FileName>led_status_tasks.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\led_status_tasks.c</FilePath>
+            </File>
+            <File>
+              <FileName>led_status_tasks.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\led_status_tasks.h</FilePath>
+            </File>
+            <File>
+              <FileName>semaphore_based_tasks.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\semaphore_based_tasks.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -533,5 +578,14 @@
       </file>
     </files>
   </RTE>
+
+  <LayerInfo>
+    <Layers>
+      <Layer>
+        <LayName>Lab-05-01-BasicQueue</LayName>
+        <LayPrjMark>1</LayPrjMark>
+      </Layer>
+    </Layers>
+  </LayerInfo>
 
 </Project>

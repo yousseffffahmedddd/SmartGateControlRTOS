@@ -327,7 +327,7 @@
                                                   } while(0)
 
 /* Defines needed by FreeRTOS to implement CMSIS RTOS2 API. Do not change! */
-#define configCPU_CLOCK_HZ                        (16000000)
+#define configCPU_CLOCK_HZ                        (50000000)
 #define configUSE_PREEMPTION                      1
 #define configUSE_TIMERS                          1
 #define configUSE_MUTEXES                         1

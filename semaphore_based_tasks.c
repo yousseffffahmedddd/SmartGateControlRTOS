@@ -1,5 +1,6 @@
 #include "FreeRTOS.h"
 #include "semphr.h"
+#include "timers.h"
 #include "gate_control_task.h"
 #include "led_status_tasks.h"
 #include "rtos_resources.h"
@@ -13,6 +14,7 @@ extern SemaphoreHandle_t xOpenLimitSem;
 extern SemaphoreHandle_t xCloseLimitSem;
 extern SemaphoreHandle_t xObstacleSem;
 extern GateCtx_t gGate;
+extern TimerHandle_t xReverseTimer;
 
 // by ahmed and yousef
 void vReverseTimerCb(TimerHandle_t xTimer)
@@ -38,10 +40,11 @@ void vSafetyTask(void *pvParameters)
         {
             gGate.state    = GATE_REVERSING;
             gGate.autoMode = 0;
-            xSemaphoreGive(xGateStateMutex);    /* release BEFORE side effects */
-
+          
+             xSemaphoreGive(xGateStateMutex);    /* release BEFORE side effects */
             setLED(LED_GREEN);
-            xTimerStart(xReverseTimer, 0);      /* fires vReverseTimerCb after 500ms */
+            xTimerStart(xReverseTimer,portMAX_DELAY);      /* fires vReverseTimerCb after 500ms */
+             
         }
         else
         {

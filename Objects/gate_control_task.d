@@ -1,4 +1,4 @@
-./objects/main.o: main.c \
+./objects/gate_control_task.o: gate_control_task.c \
   C:\Users\Mohamed\ Morsi\AppData\Local\Arm\Packs\ARM\CMSIS-FreeRTOS\11.2.0\Source\include\FreeRTOS.h \
   C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stddef.h \
   C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdint.h \
@@ -25,4 +25,4 @@
   C:\Users\Mohamed\ Morsi\AppData\Local\Arm\Packs\ARM\CMSIS-FreeRTOS\11.2.0\Source\include\queue.h \
   C:\Users\Mohamed\ Morsi\AppData\Local\Arm\Packs\ARM\CMSIS-FreeRTOS\11.2.0\Source\include\semphr.h \
   C:\Users\Mohamed\ Morsi\AppData\Local\Arm\Packs\ARM\CMSIS-FreeRTOS\11.2.0\Source\include\timers.h \
-  gpio_utility.h rtos_resources.h led_status_tasks.h gate_control_task.h
+  gate_events.h gate_control_task.h led_status_tasks.h rtos_resources.h

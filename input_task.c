@@ -27,15 +27,20 @@ static inline uint8_t btnPressed(uint32_t port, uint8_t pin)
     return (GPIOPinRead(port, pin) == 0) ? 1u : 0u;
 }
 
-/* Block until button is released or timeout; return ms held */
+/* Block until button is released or timeout; return ticks held */
 static uint32_t waitForRelease(uint32_t port, uint8_t pin, uint32_t maxMs)
 {
-    uint32_t elapsed = 0;
-    while (btnPressed(port, pin) && elapsed < maxMs) {
+    const TickType_t maxTicks = pdMS_TO_TICKS(maxMs);
+    const TickType_t start = xTaskGetTickCount();
+
+    while (btnPressed(port, pin)) {
+        if ((xTaskGetTickCount() - start) >= maxTicks) {
+            break;
+        }
         vTaskDelay(pdMS_TO_TICKS(1));
-        elapsed += 1;
     }
-    return elapsed;
+
+    return (uint32_t)(xTaskGetTickCount() - start);
 }
 
 /* Classify press and enqueue event.
@@ -79,9 +84,9 @@ static void processPanel(uint32_t openPort, uint8_t openPin,
     }
 
     /* Wait for release to classify tap vs hold */
-    uint32_t heldMs = waitForRelease(port, pin, TAP_THRESHOLD_MS + 100u);
+    uint32_t heldTicks = waitForRelease(port, pin, TAP_THRESHOLD_MS + 100u);
 
-    if (heldMs >= TAP_THRESHOLD_MS) {
+    if (heldTicks >= pdMS_TO_TICKS(TAP_THRESHOLD_MS)) {
         /* -- HOLD: send PRESS_HOLD immediately, then PRESS_RELEASE on release */
         evt.cmd       = cmd;
         evt.pressType = PRESS_HOLD;

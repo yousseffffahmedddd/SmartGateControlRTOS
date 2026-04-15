@@ -17,36 +17,42 @@ Library Manager: ArmAr.exe V6.19
 Hex Converter:   FromElf.exe V6.19
 CPU DLL:         SARMCM3.DLL V5.38.0.0
 Dialog DLL:      DCM.DLL V1.17.5.0
-Target DLL:      UL2CM3.DLL V1.164.8.0
+Target DLL:      lmidk-agdi.dll V???
 Dialog DLL:      TCM.DLL V1.56.4.0
  
 <h2>Project:</h2>
 D:\College\Spring 2026\Advanced Embedded Systems Design\Personal Projects\RTOS_Project\Lab-05-01-BasicQueue.uvprojx
-Project File Date:  04/12/2026
+Project File Date:  04/15/2026
 
 <h2>Output:</h2>
 *** Using Compiler 'V6.19', folder: 'C:\Keil_v5\ARM\ARMCLANG\Bin'
 Rebuild target 'Target 1'
-compiling consoleprint.c...
 compiling basic_io.c...
 compiling main.c...
+compiling consoleprint.c...
 compiling retarget.c...
+compiling isr.c...
+compiling input_task.c...
+compiling gate_control_task.c...
+compiling led_status_tasks.c...
+compiling gpio_utility.c...
+compiling semaphore_based_tasks.c...
 compiling clib_os.c...
 compiling os_systick.c...
 compiling cmsis_os2.c...
 compiling retarget_io.c...
-assembling startup_TM4C123.s...
-compiling system_TM4C123.c...
 compiling freertos_evr.c...
+compiling system_TM4C123.c...
+assembling startup_TM4C123.s...
 compiling list.c...
 compiling event_groups.c...
 compiling port.c...
 compiling heap_4.c...
 compiling queue.c...
-compiling timers.c...
 compiling tasks.c...
+compiling timers.c...
 linking...
-Program Size: Code=22300 RO-data=1272 RW-data=4 ZI-data=12024  
+Program Size: Code=20436 RO-data=768 RW-data=4 ZI-data=12000  
 ".\Objects\Lab-05-01-BasicQueue.axf" - 0 Error(s), 0 Warning(s).
 
 <h2>Software Packages used:</h2>
@@ -106,14 +112,14 @@ Package Vendor: Keil
       Include file:  CMSIS/RTOS2/FreeRTOS/Config/FreeRTOSConfig.h
 
    * Component: ARM.FreeRTOS::RTOS:Core:Cortex-M:11.2.0
+      Source file:   Source/queue.c
       Source file:   Source/list.c
+      Include file:  Source/include/task.h
+      Source file:   Source/portable/GCC/ARM_CM4F/port.c
       Source file:   Source/tasks.c
+      Include file:  Source/include/FreeRTOS.h
       Include file:  Source/include/queue.h
       Include file:  Source/include/semphr.h
-      Include file:  Source/include/task.h
-      Source file:   Source/queue.c
-      Include file:  Source/include/FreeRTOS.h
-      Source file:   Source/portable/GCC/ARM_CM4F/port.c
       Source file:   CMSIS/RTOS2/FreeRTOS/Source/freertos_evr.c
 
    * Component: ARM.FreeRTOS::RTOS:Event Groups:11.2.0
@@ -124,8 +130,8 @@ Package Vendor: Keil
       Source file:   Source/portable/MemMang/heap_4.c
 
    * Component: ARM.FreeRTOS::RTOS:Timers:11.2.0
-      Source file:   Source/timers.c
       Include file:  Source/include/timers.h
+      Source file:   Source/timers.c
 
    * Component: ARM::CMSIS:CORE:6.2.0
 
@@ -133,9 +139,9 @@ Package Vendor: Keil
       Source file:   CMSIS/RTOS2/Source/os_systick.c
 
    * Component: ARM::CMSIS:RTOS2:FreeRTOS:Cortex-M:11.2.0
+      Source file:   CMSIS/RTOS2/FreeRTOS/Source/clib_os.c
       Include file:  CMSIS/RTOS2/FreeRTOS/Include/freertos_mpool.h
       Source file:   CMSIS/RTOS2/FreeRTOS/Source/cmsis_os2.c
-      Source file:   CMSIS/RTOS2/FreeRTOS/Source/clib_os.c
 
    * Component: Keil.ARM Compiler::Compiler:I/O:STDIN:ITM:1.2.0
       Source file:   Source/retarget_io.c
@@ -144,10 +150,10 @@ Package Vendor: Keil
       Source file:   Source/retarget_io.c
 
    * Component: Keil::Device:Startup:1.0.1
-      Source file:   Device/Source/ARM/startup_TM4C123.s
-      Source file:   Device/Source/system_TM4C123.c
       Include file:  Device/Include/TM4C123/TM4C123.h
-Build Time Elapsed:  00:00:02
+      Source file:   Device/Source/system_TM4C123.c
+      Source file:   Device/Source/ARM/startup_TM4C123.s
+Build Time Elapsed:  00:00:03
 </pre>
 </body>
 </html>

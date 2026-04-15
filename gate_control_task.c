@@ -54,14 +54,14 @@ GateCtx_t gGate = { .state = GATE_IDLE_CLOSED, .autoMode = 0 };
             gGate.state    = GATE_STOPPED_MIDWAY;
             gGate.autoMode = 0;
         }
-        else if (cmd == CMD_CLOSE) {
-            if (gGate.autoMode) {
-                gGate.state    = GATE_STOPPED_MIDWAY;
-                gGate.autoMode = 0;
-            } else {
-                gGate.state = GATE_CLOSING;
-            }
-        }
+        // else if (cmd == CMD_CLOSE) {
+        //     if (gGate.autoMode) {
+        //         gGate.state    = GATE_STOPPED_MIDWAY;
+        //         gGate.autoMode = 0;
+        //     } else {
+        //         gGate.state = GATE_CLOSING;
+        //     }
+        // }
         else if (cmd == CMD_OPEN && press == PRESS_RELEASE) {
             if (!gGate.autoMode) {
                 gGate.state = GATE_STOPPED_MIDWAY;
@@ -74,14 +74,14 @@ GateCtx_t gGate = { .state = GATE_IDLE_CLOSED, .autoMode = 0 };
             gGate.state    = GATE_STOPPED_MIDWAY;
             gGate.autoMode = 0;
         }
-        else if (cmd == CMD_OPEN) {
-            if (gGate.autoMode) {
-                gGate.state    = GATE_STOPPED_MIDWAY;
-                gGate.autoMode = 0;
-            } else {
-                gGate.state = GATE_OPENING;
-            }
-        }
+        // else if (cmd == CMD_OPEN) {
+        //     if (gGate.autoMode) {
+        //         gGate.state    = GATE_STOPPED_MIDWAY;
+        //         gGate.autoMode = 0;
+        //     } else {
+        //         gGate.state = GATE_OPENING;
+        //     }
+        // }
         else if (cmd == CMD_CLOSE && press == PRESS_RELEASE) {
             if (!gGate.autoMode) {
                 gGate.state = GATE_STOPPED_MIDWAY;
@@ -108,9 +108,10 @@ GateCtx_t gGate = { .state = GATE_IDLE_CLOSED, .autoMode = 0 };
     xSemaphoreGive(xGateStateMutex);         /* release mutex first     */
 
     /* LED update outside mutex — no priority inversion risk */
-    if      (newState == GATE_OPENING)  ledGreenOn();
-    else if (newState == GATE_CLOSING)  ledRedOn();
-    else                                ledAllOff();
+    if      (newState == GATE_OPENING)  setLED(LED_GREEN);
+    else if (newState == GATE_CLOSING)  setLED(LED_RED);
+    else if (newState==GATE_REVERSING) ;
+    else  setLED(LED_OFF);
 }
 
 

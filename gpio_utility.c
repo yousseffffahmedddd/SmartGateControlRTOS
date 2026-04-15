@@ -19,7 +19,7 @@ void PortF_Init(void)
     GPIOF->DIR &= ~((1 << 0) | (1 << 4));
     // Set PF4 as INPUT (switch)
 
-    GPIOF->DEN |= ((1 << 1) | (1 << 3) | (1 << 4));
+    GPIOF->DEN |=( (1<<0)| (1 << 1) | (1 << 3) | (1 << 4));
     // Enable digital function on PF1 and PF4
 
     GPIOF->PUR |= ((1 << 0) | (1 << 4));

@@ -2,6 +2,7 @@
 #include "task.h"
 #include "queue.h"
 #include "semphr.h"
+#include "timers.h"
 #include "gpio_utility.h"
 #include "rtos_resources.h"
 #include "led_status_tasks.h"
@@ -16,6 +17,7 @@ extern void vLEDControlTask(void *pvParameters);
 extern void vSafetyTask(void *pvParameters);
 extern void vOpenLimitTask(void *pvParameters);
 extern void vCloseLimitTask(void *pvParameters);
+extern void vReverseTimerCb(TimerHandle_t xTimer);
 	
 QueueHandle_t xGateEventQueue;
 SemaphoreHandle_t xGateStateMutex;
@@ -93,7 +95,7 @@ int main(void)
 	/* 5. Create reverse timer — ONE-SHOT, 500ms */
     xReverseTimer = xTimerCreate(
         "RevTmr",               /* name, debug only          */
-        pdMS_TO_TICKS(500),     /* period                    */
+        pdMS_TO_TICKS(10000),     /* period                    */
         pdFALSE,                /* one-shot (not auto-reload)*/
         NULL,                   /* timer ID, not needed      */
         vReverseTimerCb         /* callback function         */
