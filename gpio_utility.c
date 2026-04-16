@@ -43,7 +43,7 @@ void PortF_Init(void)
     NVIC_EnableIRQ(GPIOF_IRQn);
     // Enable GPIOF interrupt in NVIC
 
-    NVIC_SetPriority(GPIOF_IRQn, 6);
+    NVIC_SetPriority(GPIOF_IRQn, 5);
     // Set interrupt priority (lower number = higher priority)
 }
 
