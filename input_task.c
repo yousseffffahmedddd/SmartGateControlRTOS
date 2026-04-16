@@ -8,7 +8,7 @@
 
 /* -- Tunables ------------------------------------------------------- */
 #define DEBOUNCE_MS          50u    /* settle time after first edge      */
-#define TAP_THRESHOLD_MS     150u   /* hold longer ? HOLD, shorter ? TAP */
+#define TAP_THRESHOLD_MS     200u   /* hold longer ? HOLD, shorter ? TAP */
 #define NOTIFY_WAIT_MS       portMAX_DELAY
 
 /* ISR notification bits (must match gate_isr.c) */
