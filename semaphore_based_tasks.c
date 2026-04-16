@@ -38,13 +38,26 @@ void vSafetyTask(void *pvParameters)
 
         if (gGate.state == GATE_CLOSING)
         {
+            // ignore queue events
             gGate.state    = GATE_REVERSING;
             gGate.autoMode = 0;
-          
-             xSemaphoreGive(xGateStateMutex);    /* release BEFORE side effects */
+            xSemaphoreGive(xGateStateMutex);    /* release BEFORE side effects */
             setLED(LED_GREEN);
             xTimerStart(xReverseTimer,portMAX_DELAY);      /* fires vReverseTimerCb after 500ms */
-             
+        
+            // accept queue events
+            /*
+            gGate.state    = GATE_REVERSING;
+            gGate.autoMode = 0;
+            setLED(LED_GREEN);
+            vTaskDelay(pdMS_TO_TICKS(10000));
+            if (gGate.state == GATE_REVERSING) {        // safety check
+                gGate.state    = GATE_STOPPED_MIDWAY;
+                gGate.autoMode = 0;
+            }
+            setLED(LED_OFF);
+            xSemaphoreGive(xGateStateMutex);    // release BEFORE side effects
+            */
         }
         else
         {

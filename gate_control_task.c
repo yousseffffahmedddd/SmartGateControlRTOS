@@ -8,6 +8,7 @@
 #include "gate_control_task.h"
 #include "led_status_tasks.h"
 #include "rtos_resources.h"
+#include "basic_io.h"
 
 GateCtx_t gGate = { .state = GATE_IDLE_CLOSED, .autoMode = 0 };
 
@@ -122,6 +123,7 @@ GateCtx_t gGate = { .state = GATE_IDLE_CLOSED, .autoMode = 0 };
 
         for (;;) {
             if (xQueueReceive(xGateEventQueue, &evt, portMAX_DELAY) == pdTRUE) {
+                vPrintString("Queue has received a task!\n");
                 handleEvent(&evt);
             }
         }

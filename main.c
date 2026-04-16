@@ -45,7 +45,7 @@ int main(void)
 		PB2 Open Limit
 		PB3 Closed Limit
 		PB4 Obstacle
-		*/
+		*/	
 		PortF_Init();
 		PortB_Init();
 		__asm("  CPSIE I");

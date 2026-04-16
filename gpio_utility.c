@@ -72,14 +72,11 @@ void PortB_Init(void)
                    (1 << 3) | (1 << 4));
     // Make PB0-PB4 edge-sensitive interrupts
 
-    GPIOB->IBE |= ((1 << 0) | (1 << 1));
-    // Enable both-edge interrupt on PB0 and PB1
+    GPIOB->IBE &= ~((1 << 0) | (1 << 1) | (1 << 2) | (1 << 3) | (1 << 4));
+    // Disable both-edge on PB0-PB4 (single-edge mode)
 
-    GPIOB->IBE &= ~((1 << 2) | (1 << 3) | (1 << 4));
-    // Disable both-edge on PB2-PB4 (single-edge mode)
-
-    GPIOB->IEV &= ~((1 << 2) | (1 << 3) | (1 << 4));
-    // Set PB2-PB4 interrupt to falling edge
+    GPIOB->IEV &= ~((1 << 0) | (1 << 1) | (1 << 2) | (1 << 3) | (1 << 4));
+    // Set PB0-PB4 interrupt to falling edge
 
     GPIOB->ICR |= ((1 << 0) | (1 << 1) | (1 << 2) |
                    (1 << 3) | (1 << 4));

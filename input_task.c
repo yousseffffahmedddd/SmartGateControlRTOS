@@ -7,8 +7,8 @@
 #include "rtos_resources.h"
 
 /* -- Tunables ------------------------------------------------------- */
-#define DEBOUNCE_MS          20u    /* settle time after first edge      */
-#define TAP_THRESHOLD_MS     300u   /* hold longer ? HOLD, shorter ? TAP */
+#define DEBOUNCE_MS          50u    /* settle time after first edge      */
+#define TAP_THRESHOLD_MS     150u   /* hold longer ? HOLD, shorter ? TAP */
 #define NOTIFY_WAIT_MS       portMAX_DELAY
 
 /* ISR notification bits (must match gate_isr.c) */
@@ -127,8 +127,13 @@ void vInputTask(void *pvParameters)
            If only driver fired, process driver.
            Both fired simultaneously? security wins (spec 4).          */
 
-        uint8_t secActive = (ulNotifiedValue & (NOTIFY_SEC_OPEN | NOTIFY_SEC_CLOSE)) != 0;
-        uint8_t drvActive = (ulNotifiedValue & (NOTIFY_DRV_OPEN | NOTIFY_DRV_CLOSE)) != 0;
+        
+        // ignore notified value and check on whats currently being PRESSED
+        // (live check, not depend on ISR-sent values)
+        uint8_t secActive = (btnPressed(GPIOF_BASE, (1 << 4)) ||
+                     btnPressed(GPIOF_BASE, (1 << 0)));
+        uint8_t drvActive = (btnPressed(GPIOB_BASE, (1 << 0)) ||
+                            btnPressed(GPIOB_BASE, (1 << 1)));
 
         if (secActive) {
             /* Security panel takes priority - process it */

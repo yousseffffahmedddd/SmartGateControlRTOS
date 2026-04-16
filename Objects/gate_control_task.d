@@ -25,4 +25,5 @@
   C:\Users\Mohamed\ Morsi\AppData\Local\Arm\Packs\ARM\CMSIS-FreeRTOS\11.2.0\Source\include\queue.h \
   C:\Users\Mohamed\ Morsi\AppData\Local\Arm\Packs\ARM\CMSIS-FreeRTOS\11.2.0\Source\include\semphr.h \
   C:\Users\Mohamed\ Morsi\AppData\Local\Arm\Packs\ARM\CMSIS-FreeRTOS\11.2.0\Source\include\timers.h \
-  gate_events.h gate_control_task.h led_status_tasks.h rtos_resources.h
+  gate_events.h gate_control_task.h led_status_tasks.h rtos_resources.h \
+  Required_Files\basic_io.h
