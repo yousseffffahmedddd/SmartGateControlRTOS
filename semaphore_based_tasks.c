@@ -17,16 +17,17 @@ extern GateCtx_t gGate;
 extern TimerHandle_t xReverseTimer;
 
 // by ahmed and yousef
-void vReverseTimerCb(TimerHandle_t xTimer)
-{
-    xSemaphoreTake(xGateStateMutex, portMAX_DELAY);
-    if (gGate.state == GATE_REVERSING) {        /* safety check */
-        gGate.state    = GATE_STOPPED_MIDWAY;
-        gGate.autoMode = 0;
-    }
-    xSemaphoreGive(xGateStateMutex);
-    setLED(LED_OFF);
-}
+// void vReverseTimerCb(TimerHandle_t xTimer)
+// {
+//     xSemaphoreTake(xGateStateMutex, portMAX_DELAY);
+//     if (gGate.state == GATE_REVERSING) {        /* safety check */
+//         gGate.state    = GATE_STOPPED_MIDWAY;
+//         gGate.autoMode = 0;
+//     }
+//     xSemaphoreGive(xGateStateMutex);
+//     setLED(LED_OFF);
+// }
+
 // by ahmed and yousef
 void vSafetyTask(void *pvParameters)
 {
@@ -39,25 +40,25 @@ void vSafetyTask(void *pvParameters)
         if (gGate.state == GATE_CLOSING)
         {
             // ignore queue events
-            gGate.state    = GATE_REVERSING;
-            gGate.autoMode = 0;
-            xSemaphoreGive(xGateStateMutex);    /* release BEFORE side effects */
-            setLED(LED_GREEN);
-            xTimerStart(xReverseTimer,portMAX_DELAY);      /* fires vReverseTimerCb after 500ms */
-        
-            // accept queue events
             /*
             gGate.state    = GATE_REVERSING;
             gGate.autoMode = 0;
+            xSemaphoreGive(xGateStateMutex);    // release BEFORE side effects
             setLED(LED_GREEN);
-            vTaskDelay(pdMS_TO_TICKS(10000));
+            xTimerStart(xReverseTimer,portMAX_DELAY);      // fires vReverseTimerCb after 500ms
+            */
+        
+            // accept queue events
+            gGate.state    = GATE_REVERSING;
+            gGate.autoMode = 0;
+            setLED(LED_GREEN);
+            vTaskDelay(pdMS_TO_TICKS(500)); // 0.5 sec delay
             if (gGate.state == GATE_REVERSING) {        // safety check
                 gGate.state    = GATE_STOPPED_MIDWAY;
                 gGate.autoMode = 0;
             }
             setLED(LED_OFF);
             xSemaphoreGive(xGateStateMutex);    // release BEFORE side effects
-            */
         }
         else
         {

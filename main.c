@@ -28,7 +28,7 @@ SemaphoreHandle_t xLEDSem;
 TaskHandle_t xInputTaskHandle;
 
 // timer handle
-TimerHandle_t    xReverseTimer;
+// TimerHandle_t    xReverseTimer;
 
 int main(void)
 {
@@ -91,15 +91,15 @@ int main(void)
 		// xTaskCreate(vStatusTask, "Task", 240, NULL, 1, NULL);
     
 
-		// initialize Timer Api
+	// initialize Timer Api
 	/* 5. Create reverse timer — ONE-SHOT, 500ms */
-    xReverseTimer = xTimerCreate(
-        "RevTmr",               /* name, debug only          */
-        pdMS_TO_TICKS(10000),     /* period                    */
-        pdFALSE,                /* one-shot (not auto-reload)*/
-        NULL,                   /* timer ID, not needed      */
-        vReverseTimerCb         /* callback function         */
-    );
+    // xReverseTimer = xTimerCreate(
+    //     "RevTmr",               /* name, debug only          */
+    //     pdMS_TO_TICKS(10000),     /* period                    */
+    //     pdFALSE,                /* one-shot (not auto-reload)*/
+    //     NULL,                   /* timer ID, not needed      */
+    //     vReverseTimerCb         /* callback function         */
+    // );
 
 
     vTaskStartScheduler();
